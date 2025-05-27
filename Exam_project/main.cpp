@@ -7,6 +7,7 @@
 #include <vector>
 #include "Game.h"
 
+// Проверка на бессмысленную последовательность (например, повтор хода через шаг)
 bool isMeaninglessSequence(const std::string& sequence) {
     std::vector<std::string> moves;
     std::stringstream ss(sequence);
@@ -28,21 +29,25 @@ bool isMeaninglessSequence(const std::string& sequence) {
 
 int main(int argc, char* argv[]) {
     setlocale(LC_ALL, "ru");
+
+    // Проверка на правильность запуска с аргументом (имя входного файла)
     if (argc != 2) {
         std::cerr << "Использование: " << argv[0] << " input.txt\n";
         return 1;
     }
 
+    // Загрузка позиции из файла
     Game game;
     if (!game.loadFromFile(argv[1])) {
         std::cerr << "Ошибка загрузки файла: " << argv[1] << "\n";
         return 1;
     }
 
+    // Вывод позиции
     std::cout << "=== ШАХМАТНАЯ ПОЗИЦИЯ ===\n";
     game.printBoard();
 
-
+    // Проверка: позиция уже мат?
     if (game.isCurrentPositionMate()) {
         std::cout << "Позиция уже является матом!\n";
         std::ofstream file("output.txt");
@@ -52,11 +57,11 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
+    // Поиск мата за белых в 1–3 хода
     std::cout << "\n=== АНАЛИЗ МАТА В 3 ХОДА (Alpha-Beta поиск) ===\n";
-
-
     auto matesByDepth = game.findAllMateSequences(3);
 
+    // Вывод и сохранение найденных решений
     bool foundAny = false;
     std::ofstream outFile("output.txt");
 
@@ -98,7 +103,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-
+    // Если матов не найдено
     if (!foundAny) {
         std::cout << "Мат в 3 хода не найден.\n";
         if (outFile.is_open()) {

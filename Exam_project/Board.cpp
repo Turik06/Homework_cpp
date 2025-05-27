@@ -3,14 +3,17 @@
 #include <iostream>
 #include <algorithm>
 
+// Конструктор по умолчанию: очищает доску
 Board::Board() {
     clear();
 }
 
+// Деструктор: очищает доску
 Board::~Board() {
     clear();
 }
 
+// Конструктор копирования: клонирует все фигуры
 Board::Board(const Board& other) {
     clear();
     for (int i = 0; i < 8; i++) {
@@ -22,6 +25,7 @@ Board::Board(const Board& other) {
     }
 }
 
+// Оператор присваивания: глубокое копирование фигур
 Board& Board::operator=(const Board& other) {
     if (this != &other) {
         clear();
@@ -36,6 +40,7 @@ Board& Board::operator=(const Board& other) {
     return *this;
 }
 
+// Очистка доски: удаление всех фигур
 void Board::clear() {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -44,6 +49,7 @@ void Board::clear() {
     }
 }
 
+// Добавить фигуру на доску
 void Board::addPiece(std::unique_ptr<ChessPiece> piece) {
     Position pos = piece->getPosition();
     if (pos.isValid()) {
@@ -51,12 +57,14 @@ void Board::addPiece(std::unique_ptr<ChessPiece> piece) {
     }
 }
 
+// Удалить фигуру с указанной позиции
 void Board::removePiece(const Position& position) {
     if (position.isValid()) {
         board[position.x][position.y] = nullptr;
     }
 }
 
+// Получить фигуру на позиции (может вернуть nullptr)
 ChessPiece* Board::getPieceAt(const Position& position) const {
     if (position.isValid()) {
         return board[position.x][position.y].get();
@@ -64,13 +72,14 @@ ChessPiece* Board::getPieceAt(const Position& position) const {
     return nullptr;
 }
 
+// Совершить ход. Возвращает true, если ход корректен и выполнен
 bool Board::makeMove(const Move& move) {
     ChessPiece* piece = getPieceAt(move.from);
     if (!piece || !piece->isValidMove(*this, move)) {
         return false;
     }
 
-    // Сохраняем взятую фигуру
+    // Сохраняем взятую фигуру (если есть)
     std::unique_ptr<ChessPiece> capturedPiece = std::move(board[move.to.x][move.to.y]);
 
     // Перемещаем фигуру
@@ -81,7 +90,7 @@ bool Board::makeMove(const Move& move) {
     return true;
 }
 
-
+// Получить все фигуры указанного цвета
 std::vector<ChessPiece*> Board::getPiecesByColor(Color color) const {
     std::vector<ChessPiece*> pieces;
     for (int i = 0; i < 8; i++) {
@@ -95,6 +104,7 @@ std::vector<ChessPiece*> Board::getPiecesByColor(Color color) const {
     return pieces;
 }
 
+// Найти короля заданного цвета
 Position Board::findKing(Color color) const {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -105,9 +115,10 @@ Position Board::findKing(Color color) const {
             }
         }
     }
-    return Position(-1, -1);
+    return Position(-1, -1); // Король не найден
 }
 
+// Проверка, атакуется ли позиция фигурами определенного цвета
 bool Board::isPositionAttacked(const Position& position, Color attackingColor) const {
     auto pieces = getPiecesByColor(attackingColor);
     for (auto piece : pieces) {
@@ -119,41 +130,42 @@ bool Board::isPositionAttacked(const Position& position, Color attackingColor) c
     return false;
 }
 
+// Проверка, находится ли король под шахом
 bool Board::isKingInCheck(Color color) const {
     Position kingPos = findKing(color);
     if (!kingPos.isValid()) return false;
     return isPositionAttacked(kingPos, color == Color::WHITE ? Color::BLACK : Color::WHITE);
 }
 
+// Проверка на мат королю указанного цвета
 bool Board::isKingInCheckmate(Color color) const {
-    
     Position kingPos = findKing(color);
     if (!kingPos.isValid()) {
-      
-        return true;
+        return false; 
     }
 
-    if (!isKingInCheck(color)) { 
-        return false;
+    if (!isKingInCheck(color)) {
+        return false; // Нет шаха — и мата нет
     }
 
-    auto piecesToMove = getPiecesByColor(color); 
+    // Перебираем все возможные ходы, чтобы спасти короля
+    auto piecesToMove = getPiecesByColor(color);
     for (ChessPiece* piece : piecesToMove) {
-        auto possibleMoves = piece->getPossibleMoves(*this); 
+        auto possibleMoves = piece->getPossibleMoves(*this);
         for (const Move& currentMove : possibleMoves) {
-            Board testBoard = *this;
-
+            Board testBoard = *this; // Копия доски для симуляции
             if (testBoard.makeMove(currentMove)) {
                 if (!testBoard.isKingInCheck(color)) {
-                    return false;
+                    return false; // Нашли ход, спасающий от мата
                 }
             }
         }
     }
 
-    return true;
+    return true; // Ни один ход не спасает — мат
 }
 
+// Печать текущего состояния доски
 void Board::print() const {
     std::cout << "  a b c d e f g h\n";
     std::cout << " +-----------------+\n";

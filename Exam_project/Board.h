@@ -9,25 +9,37 @@ class ChessPiece;
 
 class Board {
 public:
-    Board();
-    Board(const Board& other);
-    ~Board();
+    // Конструкторы и деструктор
+    Board();                            // Создание пустой доски
+    Board(const Board& other);          // Копирующий конструктор
+    ~Board();                           // Деструктор
 
+    // Оператор присваивания
     Board& operator=(const Board& other);
-    void clear();
-    void addPiece(std::unique_ptr<ChessPiece> piece);
-    void removePiece(const Position& position);
-    ChessPiece* getPieceAt(const Position& position) const;
-    bool makeMove(const Move& move);
 
-    std::vector<ChessPiece*> getPiecesByColor(Color color) const;
-    Position findKing(Color color) const;
-    bool isKingInCheck(Color color) const;
-    bool isPositionAttacked(const Position& position, Color attackingColor) const;
-    bool isKingInCheckmate(Color color) const;
+    // Очистка доски
+    void clear();
+
+    // Работа с фигурами
+    void addPiece(std::unique_ptr<ChessPiece> piece);      // Добавление фигуры
+    void removePiece(const Position& position);            // Удаление фигуры
+    ChessPiece* getPieceAt(const Position& position) const; // Получить фигуру по позиции
+
+    // Ходы
+    bool makeMove(const Move& move);                       // Совершить ход
+
+    // Поиск фигур и проверок
+    std::vector<ChessPiece*> getPiecesByColor(Color color) const; // Все фигуры цвета
+    Position findKing(Color color) const;                          // Позиция короля
+    bool isKingInCheck(Color color) const;                         // Шах королю
+    bool isPositionAttacked(const Position& position, Color attackingColor) const; // Атакована ли позиция
+    bool isKingInCheckmate(Color color) const;                     // Мат
+
+    // Вывод доски в консоль
     void print() const;
 
 private:
+    // 8x8 доска с уникальными фигурами
     std::unique_ptr<ChessPiece> board[8][8];
 };
 

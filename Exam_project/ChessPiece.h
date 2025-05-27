@@ -7,28 +7,33 @@
 
 class Board;
 
+// Абстрактный базовый класс для всех шахматных фигур
 class ChessPiece {
 public:
+    // Конструктор с цветом и позицией
     ChessPiece(Color c, Position p) : color(c), position(p) {}
     virtual ~ChessPiece() = default;
 
-    Color getColor() const { return color; }
-    Position getPosition() const { return position; }
-    void setPosition(const Position& p) { position = p; }
+    // Геттеры и сеттеры
+    Color getColor() const { return color; }            // Цвет фигуры
+    Position getPosition() const { return position; }   // Текущая позиция
+    void setPosition(const Position& p) { position = p; } // Установить позицию
 
-    virtual std::vector<Move> getPossibleMoves(const Board& board) const = 0;
-    virtual bool isValidMove(const Board& board, const Move& move) const = 0;
-    virtual PieceType getType() const = 0;
-    virtual char getSymbol() const = 0;
-    virtual std::unique_ptr<ChessPiece> clone() const = 0;
+    // Чисто виртуальные методы (переопределяются в подклассах)
+    virtual std::vector<Move> getPossibleMoves(const Board& board) const = 0; // Все допустимые ходы
+    virtual bool isValidMove(const Board& board, const Move& move) const = 0; // Проверка допустимости хода
+    virtual PieceType getType() const = 0;    // Тип фигуры
+    virtual char getSymbol() const = 0;       // Символ фигуры
+    virtual std::unique_ptr<ChessPiece> clone() const = 0; // Клонирование фигуры
 
 protected:
-    Color color;
-    Position position;
+    Color color;         // Цвет фигуры
+    Position position;   // Позиция на доске
 
-    bool isValidPosition(const Position& p) const { return p.isValid(); }
-    bool isPositionEmptyOrEnemy(const Board& board, const Position& p) const;
-    bool isPositionEmpty(const Board& board, const Position& p) const;
+    // Вспомогательные проверки для ходов
+    bool isValidPosition(const Position& p) const { return p.isValid(); }      // Проверка допустимости позиции
+    bool isPositionEmptyOrEnemy(const Board& board, const Position& p) const;  // Пустая или вражеская клетка
+    bool isPositionEmpty(const Board& board, const Position& p) const;         // Пустая клетка
 };
 
 #endif // CHESS_PIECE_H

@@ -2,6 +2,7 @@
 #include "Board.h"
 #include <cmath>
 
+// Король: может ходить на 1 клетку в любую сторону, если клетка не под атакой
 std::vector<Move> King::getPossibleMoves(const Board& board_ref) const {
     std::vector<Move> moves;
     for (int dx = -1; dx <= 1; ++dx) {
@@ -20,6 +21,7 @@ std::vector<Move> King::getPossibleMoves(const Board& board_ref) const {
     return moves;
 }
 
+// Король: проверка, допустим ли ход на 1 клетку
 bool King::isValidMove(const Board& board, const Move& move) const {
     if (move.from != position) return false;
     int dx = std::abs(move.to.x - move.from.x);
@@ -28,6 +30,7 @@ bool King::isValidMove(const Board& board, const Move& move) const {
     return isPositionEmptyOrEnemy(board, move.to);
 }
 
+// Ферзь: все вертикальные, горизонтальные и диагональные ходы
 std::vector<Move> Queen::getPossibleMoves(const Board& board) const {
     std::vector<Move> moves;
     const int dx_options[] = { 0, 1, 0, -1, 1, 1, -1, -1 };
@@ -56,6 +59,7 @@ std::vector<Move> Queen::getPossibleMoves(const Board& board) const {
     return moves;
 }
 
+// Ферзь: проверка допустимости хода по прямой или диагонали
 bool Queen::isValidMove(const Board& board, const Move& move) const {
     if (move.from != position) return false;
 
@@ -81,6 +85,7 @@ bool Queen::isValidMove(const Board& board, const Move& move) const {
     return isPositionEmptyOrEnemy(board, move.to);
 }
 
+// Ладья: ходы только по вертикали и горизонтали
 std::vector<Move> Rook::getPossibleMoves(const Board& board) const {
     std::vector<Move> moves;
     const int dx_options[] = { 0, 1, 0, -1 };
@@ -101,6 +106,7 @@ std::vector<Move> Rook::getPossibleMoves(const Board& board) const {
     return moves;
 }
 
+// Ладья: проверка допустимости хода по прямой
 bool Rook::isValidMove(const Board& board, const Move& move) const {
     if (move.from != position) return false;
     int dx = move.to.x - move.from.x;
@@ -125,6 +131,7 @@ bool Rook::isValidMove(const Board& board, const Move& move) const {
     return isPositionEmptyOrEnemy(board, move.to);
 }
 
+// Слон: ходит только по диагонали
 std::vector<Move> Bishop::getPossibleMoves(const Board& board) const {
     std::vector<Move> moves;
     const int dx_options[] = { 1, 1, -1, -1 };
@@ -145,6 +152,7 @@ std::vector<Move> Bishop::getPossibleMoves(const Board& board) const {
     return moves;
 }
 
+// Слон: проверка, что ход по диагонали
 bool Bishop::isValidMove(const Board& board, const Move& move) const {
     if (move.from != position) return false;
     int dx = move.to.x - move.from.x;
@@ -169,6 +177,7 @@ bool Bishop::isValidMove(const Board& board, const Move& move) const {
     return isPositionEmptyOrEnemy(board, move.to);
 }
 
+// Конь: 8 возможных L-образных ходов
 std::vector<Move> Knight::getPossibleMoves(const Board& board) const {
     std::vector<Move> moves;
     const int dx_options[] = { 1, 2,  2,  1, -1, -2, -2, -1 };
@@ -183,6 +192,7 @@ std::vector<Move> Knight::getPossibleMoves(const Board& board) const {
     return moves;
 }
 
+// Конь: проверка L-образного хода
 bool Knight::isValidMove(const Board& board, const Move& move) const {
     if (move.from != position) return false;
     int dx_abs = std::abs(move.to.x - move.from.x);
@@ -191,6 +201,7 @@ bool Knight::isValidMove(const Board& board, const Move& move) const {
         isPositionEmptyOrEnemy(board, move.to);
 }
 
+// Пешка: движение вперед, атака по диагонали
 std::vector<Move> Pawn::getPossibleMoves(const Board& board) const {
     std::vector<Move> moves;
     int forward = (color == Color::WHITE) ? 1 : -1;
@@ -216,6 +227,7 @@ std::vector<Move> Pawn::getPossibleMoves(const Board& board) const {
     return moves;
 }
 
+// Пешка: проверка корректности хода (вперед или атака)
 bool Pawn::isValidMove(const Board& board, const Move& move) const {
     if (move.from != position) return false;
     int forward = (color == Color::WHITE) ? 1 : -1;
@@ -238,6 +250,7 @@ bool Pawn::isValidMove(const Board& board, const Move& move) const {
     return false;
 }
 
+// Пешка: можно ли взять фигуру по диагонали
 bool Pawn::canCaptureDiagonally(const Board& board, const Position& target) const {
     ChessPiece* piece = board.getPieceAt(target);
     return piece != nullptr && piece->getColor() != this->color;
