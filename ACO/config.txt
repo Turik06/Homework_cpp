@@ -1,0 +1,22 @@
+input_file = test.txt           # Входной файл с графом
+output_file = aco_results.txt   # Файл для записи результатов
+num_iterations = 100            # Количество итераций алгоритма
+evaporation_rate = 0.1          # Скорость испарения феромонов (0.1 = 10%)
+
+[Ant]
+name = Scout       # Тип: Разведчик 
+count = 5          # Количество муравьев этого типа
+alpha = 4.0        # Alpha: важность феромонов (высокая)
+beta = 1.0         # Beta: важность расстояния (низкая)
+
+[Ant]
+name = Pathfinder  # Тип: Следопыт 
+count = 10         # Количество
+alpha = 0.5        # Alpha (низкая)
+beta = 5.0         # Beta (высокая - жадный алгоритм)
+
+[Ant]
+name = Worker      # Тип: Рабочий
+count = 20         # Количество
+alpha = 1.0        # Alpha
+beta = 2.0         # Beta
