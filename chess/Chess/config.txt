@@ -1,0 +1,12 @@
+# Настройки шахматного движка
+searchDepth=5
+logAlphaBeta=true
+logFilePath=ai_debug.log
+
+# Ценность фигур
+pawnValue=100
+knightValue=320
+bishopValue=330
+rookValue=500
+queenValue=900
+kingValue=20000
